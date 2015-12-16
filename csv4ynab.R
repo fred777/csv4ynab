@@ -23,9 +23,8 @@ if(length(csvfname)>0)
 # csvfname="1234________1234.csv"
 # csvfname="hibiscus-export-20151209.csv"
 # csvfname="1234________1234.csv"
-# csvfname="4998________1592.csv"
 
-  cat("Reading '",csvfname,"'...")
+  cat("Reading '",csvfname,"'...",sep="")
   fcon=file(csvfname,"rt", encoding = "CP1252")
 
   header=readLines(fcon,1)
@@ -67,7 +66,7 @@ if(length(csvfname)>0)
               # Belegdatum Wertstellung
               dt=dt[,.(Datum=as.Date(Belegdatum,"%d.%m.%Y"),
                        Gegenkonto=Beschreibung,
-                       Betrag=as.numeric(gsub("," , "." , gsub(".","",`Betrag (EUR)`,fixed=T) ,fixed=T))
+                       Betrag=`Betrag (EUR)`
                        )]
               dt[,Beschreibung:=""]
               list(saldo=saldo,dt=dt)
@@ -116,6 +115,6 @@ if(length(csvfname)>0)
     )
 
   ynabfname=paste0("ynab_",csvfname)
-  cat("Writing '",ynabfname,"'...\n")
+  cat("Writing '",ynabfname,"'...\n",sep="")
   write.csv(dt4ynab,file=ynabfname,quote=F,row.names=F)
 }
