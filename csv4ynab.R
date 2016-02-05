@@ -105,6 +105,12 @@ if(length(csvfname)>0)
   # 01/25/12,Sample Payee,,Sample Memo for an outflow,100.00,
   # 01/26/12,Sample Payee 2,,Sample memo for an inflow,,500.00
 
+  if(result$dt[,is.character(Betrag)])
+  {
+    result$dt[,Betrag:=gsub("[.]","",Betrag)]
+    result$dt[,Betrag:=as.double(gsub("[,]",".",Betrag))]
+  }
+
   dt4ynab=data.table(
     Date=result$dt[,format(Datum,"%d/%m/%y")],
     Payee=result$dt[,clean_str(Gegenkonto)],
@@ -114,7 +120,9 @@ if(length(csvfname)>0)
     Inflow= result$dt[,ifelse(Betrag<0,"",formatC(Betrag,decimal.mark = ".",digits=2,format="f"))]
     )
 
+  print(dt4ynab)
+
   ynabfname=paste0("ynab_",csvfname)
-  cat("Writing '",ynabfname,"'...\n",sep="")
+  cat("\nWriting '",ynabfname,"'...\n",sep="")
   write.csv(dt4ynab,file=ynabfname,quote=F,row.names=F)
 }
