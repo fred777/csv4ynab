@@ -27,6 +27,7 @@ if(length(csvfname)>0)
   cat("Reading '",csvfname,"'...",sep="")
   fcon=file(csvfname,"rt", encoding = "CP1252")
 
+  line_nr=1
   header=readLines(fcon,1)
 
   ftype=if( grepl("Kreditkarte",header,fixed = T) ) "dkbvisa" else if( grepl("Kontonummer",header,fixed = T) ) "hibiscus" else ""
@@ -37,20 +38,19 @@ if(length(csvfname)>0)
               finished=FALSE
               while(!finished)
               {
+                line_nr=line_nr+1
                 tmp=readLines(fcon,1,encoding = "CP1252")
                 stopifnot(length(tmp)>0)
                 if(nchar(tmp)>0)
                 {
                   tmp=split_csv_quoted( tmp )
-                  switch(tmp[1],
-                         `Saldo:`={
-                           saldo=gsub(" EUR","",tmp[2],fixed = T)
-                         },
-                         `Umsatz abgerechnet`={
-                           column_names=tmp
-                           finished=TRUE
-                         }
-                  )
+
+                  if(str_detect(tmp[1],"^Saldo:")){
+                    saldo=gsub(" EUR","",tmp[2],fixed = T)
+                  } else if(str_detect(tmp[1],"^Umsatz abgerechnet")){
+                    column_names=tmp
+                    finished=TRUE
+                  }
                 }
               }
 
